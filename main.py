@@ -8,7 +8,7 @@ WIN_HEIGHT_OFFSET = 5
 # Board Constants
 NUM_ROWS = 20
 NUM_COLS = 40
-NUM_MINES = 150
+NUM_MINES = 100
 
 # Display Constants
 STR_COVERED = 'x'
@@ -40,8 +40,34 @@ LOGO = r"""
 
 """
 
+def debug_str( string, win ):
+    win.addstr( 25, 25, "                                                      ")
+    win.refresh()
+
+    win.addstr( 25, 25, string ) 
+    win.refresh()
+
 def isValidCoordinate(x, y):
     return ( x >= 0 ) and ( y >= 0 ) and ( x < NUM_COLS ) and ( y < NUM_ROWS ) 
+
+def countSurroundingFlags(x, y, win):
+    count = 0
+
+    for xi in [x-1, x, x+1]:
+        for yi in [y-1, y, y+1]:
+            if (xi == x and yi == y) or not isValidCoordinate(xi, yi):
+                continue
+            if chr(win.inch(yi,xi) & 0xff) == STR_FLAG:
+                count += 1
+
+    return count
+
+def revealSurrounding(x, y, win, game):
+    for xi in [x-1, x, x+1]:
+        for yi in [y-1, y, y+1]:
+            c = chr(win.inch(yi, xi) & 0xff)   
+            if c != STR_FLAG:
+                revealTile(xi, yi, win, game)
 
 def revealTile(x, y, win, game):
     if not isValidCoordinate(x, y) or (win.inch(y,x) & 0xff) == ord(' '):
@@ -121,7 +147,12 @@ def main(stdscr):
         elif c == curses.KEY_DOWN:
             stdscr.move(min(y+1, NUM_ROWS-1), x)           
         elif c == ord('c'):
-            revealTile(x, y, stdscr, minesweeper)
+            # Check for double click on revealed tile which has proper number
+            # of marked flags
+            if ord('1') <= (stdscr.inch(y,x) & 0xff) <= ord('8') and str(countSurroundingFlags(x,y,stdscr)) == chr(stdscr.inch(y,x) & 0xff):
+                revealSurrounding(x, y, stdscr, minesweeper)
+            else:  
+                revealTile(x, y, stdscr, minesweeper)
             
             # Avoid moving the cursor. There's probably a nicer way to do this
             stdscr.move(y, x)
