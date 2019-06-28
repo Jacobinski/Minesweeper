@@ -7,7 +7,7 @@ WIN_HEIGHT_OFFSET = 5
 
 # Board Constants
 NUM_ROWS = 20
-NUM_COLS = 40
+NUM_COLS = 60
 NUM_MINES = 100
 
 # Display Constants
@@ -94,19 +94,25 @@ def revealTile(x, y, win, game):
     win.refresh()
 
 def initialize_color_pairs():
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(5, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(7, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    # Use -1 to initialize to terminal default color
+    DEFAULT_BACKGROUND = -1
+
+    curses.init_pair(1, curses.COLOR_GREEN, DEFAULT_BACKGROUND)
+    curses.init_pair(2, curses.COLOR_BLUE, DEFAULT_BACKGROUND)
+    curses.init_pair(3, curses.COLOR_MAGENTA, DEFAULT_BACKGROUND)
+    curses.init_pair(4, curses.COLOR_RED, DEFAULT_BACKGROUND)
+    curses.init_pair(5, curses.COLOR_CYAN, DEFAULT_BACKGROUND)
+    curses.init_pair(6, curses.COLOR_WHITE, DEFAULT_BACKGROUND)
+    curses.init_pair(7, curses.COLOR_YELLOW, DEFAULT_BACKGROUND)
     curses.init_pair(8, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     curses.init_pair(PAIR_MINE, curses.COLOR_BLACK, curses.COLOR_RED)
     curses.init_pair(PAIR_FLAG, curses.COLOR_BLACK, curses.COLOR_GREEN)
 
 def main(stdscr):
+    # Setup the default colors
+    curses.use_default_colors()
+
     # Clear the screen
     stdscr.clear()
 
